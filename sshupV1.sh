@@ -49,6 +49,7 @@
 #               9. Impliment a ${optLogFile} for logging.                      # 
 #                                                                              #
 #==============================================================================#
+
 #
 #=== FUNCTION =================================================================#
 # NAME: fnGetScripsDir                                                         #
@@ -64,8 +65,6 @@ declare -a initial_variables=()
 
 initial_variables="$( compgen -v )"
 
-#set -u
-echo 68 
 #
 # Set default options
 #
@@ -76,8 +75,9 @@ declare optVerbose=false
 declare optWait=false
 declare optConnect=false
 declare optWakeup=false
-declare optTimeout=30
-declare optDebug=false
+declare -i optTimeout=30
+declare -i optDebug=0
+declare optLogFile=/home/carl/sshup.log
 
 #=== FUNCTION =================================================================#
 # NAME: fnGetScripsDir                                                         #
@@ -141,17 +141,17 @@ fi
 fnGetOpsSshupV2 "$@"
 #----------------------------------------------------------------------------------
 
-echo 144
+if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
 #----------------------------------------------------------------------------------
 # Display debug information if option is set.
 #
-if [ $optDebug = true ] ; then
-    echo 149
+if [ ${optDebug} -ge ${DBG_LVL_ALL} ] ; then
+    if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
     fnDisplayDebugInfo | fnOutput false true ${optQuiet} ${optVerbose} /home/carl/sshup.log
 fi
 #----------------------------------------------------------------------------------
 
-echo 153
+if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
 #----------------------------------------------------------------------------------
 # Display usage information if host is not set.
 #
@@ -162,7 +162,7 @@ if [[ ${optHelp} == false ]] ; then
     fi
 fi
 #----------------------------------------------------------------------------------
-echo 163
+if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
 #----------------------------------------------------------------------------------
 # Display usage information if option is set.
 #
@@ -171,14 +171,15 @@ if [ $optHelp = true ] ; then
     exit 0
 fi
 #----------------------------------------------------------------------------------
-echo 172
+if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
 #----------------------------------------------------------------------------------
 # And finally the main Code.
 #
-echo 176
+if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
 declare isHostReachable=$(fnIsHostReachable "${optHost}")
-echo 178
-if [ ${isHostReachable} == true ] ; then
+if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+
+if [[ ${isHostReachable} == true ]] ; then
     declare isHostConnectable=$(fnIsHostConnectable "${optHost}")
     if [ ${isHostConnectable} == true ] ; then
         ssh ${optHost}

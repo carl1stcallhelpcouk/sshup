@@ -30,7 +30,12 @@
 #               8. Standardise comments.                                       #
 #                                                                              #
 #==============================================================================#
-
+#
+# Define some constants.
+#
+    declare -r DBG_LVL_NETWORK=75
+    declare -r DBG_LVL_OUTPUT=50
+    declare -r DBG_LVL_ALL=99
 #
 # Define colour escape sequences.
 #
@@ -256,29 +261,36 @@ fnOutput ()
     else
         logging=false
     fi
-#    echo 259 >&2
+#    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then 
+#        echo "" >&2
+#        echo "${BRIGHT}debug - ${NORMAL} ${FUNCNAME} - ${BRIGHT}lineno = ${NORMAL} $LINENO" >&2
+#        echo "${BRIGHT}verboseDetail = ${NORMAL}${verboseDetail}" >&2
+#        echo "${BRIGHT}logging = ${NORMAL}${logging}" >&2
+#        echo "${BRIGHT}quiet = ${NORMAL}${quiet}" >&2
+#        echo "${BRIGHT}verbose = ${NORMAL}${verbose}" >&2
+#        echo "${BRIGHT}logFile = ${NORMAL}${logFile}" >&2
+#        echo "" >&2
+#    fi
     until read -r line; do
 #        line=$(echo -e ${line} | sed 's/[\x01-\x1F\x7F]//g')
         if [ ${logging} == true ] ; then
-            echo 263 >&2
             printf "${logFormat}" "${line}" >> ${logFile}
+            if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO - line = ${line}" >&2 ; fi
         fi
         if [ ${quiet} == false ] ; then
-            echo 267 >&2
 
             if [ ${verbose} == true ] ; then
-                echo "270 - ${line}" >&2
-                exit 1
                 printf "%s" "${line}" >&2
+                if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO - line = ${line}" >&2 ; exit 77 ; fi
             else
-                echo 273 >&2
                 if [ ${verboseDetail} == false ] ; then
-                    echo 275 >&2
                     printf "%s" "${line}" >&2
+                    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO - line = ${line}" >&2 ; fi
                 fi
             fi
         fi
     done
+#    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO - line = ${line}" >&2 ; exit 77 ; fi
 }
 
 #=== FUNCTION =================================================================#
@@ -322,17 +334,17 @@ fnIsHostReachable ()
         
             if [ ${hostReachable} == true ] ; then
                 chkHostReach=false
+                if [[ ${optDebug} -ge ${DBG_LVL_NETWORK} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
                 printf "%s is reachable with ping - ret = %s - time = %i/%i         \r" ${host} ${hostReachable} ${elapseTime} ${optTimeout} | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
             else
+                if [[ ${optDebug} -ge ${DBG_LVL_NETWORK} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
                 printf "%s is unreachable with ping - ret = %s - time = %i/%i       \r" ${host} ${hostReachable} ${elapseTime} ${optTimeout} | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
 
                 if [[ ${optWakeup} == true ]] ; then
-                    echo "fnIsHostReachable 329" | fnOutput true true false true "/home/carl/sshup.log"
-#                    printf "%s\n" "$(wakeonlan $(arp -a "${optHost}" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'))" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log" 
+                    if [[ ${optDebug} -ge ${DBG_LVL_NETWORK} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
                     wolRet="wolRet = $(wakeonlan $(arp -a "${optHost}" | grep -m 1 -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'))"
-                    echo "fnIsHostReachable 333" >&2
-                    printf "%s\n" "${wolRet}" >&2   # | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log" 
-                    echo -e "fnIsHostReachable 335\n" | fnOutput true true false true "/home/carl/sshup.log"
+                    printf "%s\n" "${wolRet}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log" 
+                    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77 ; fi
                 fi
             fi
     
@@ -347,6 +359,7 @@ fnIsHostReachable ()
             fi
         done
         printf "\n\n" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
+        if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
         echo -e ${hostReachable}
     fi
 }
@@ -390,10 +403,13 @@ fnIsHostConnectable ()
         
             if [ ${hostReachable} == true ] ; then
                 chkHostReach=false
+                if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
                 printf "%s is reachable with ssh - ret = %s - time = %i/%i         \r" ${host} ${hostReachable} ${elapseTime} ${optTimeout} | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
             else
+                if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
                 printf "%s is unreachable with ssh - ret = %s - time = %i/%i       \r" ${host} ${hostReachable} ${elapseTime} ${optTimeout} | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
             fi
+            if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
     
             if [ ! optWait ] ; then
                 chkHostReach=false
@@ -406,6 +422,7 @@ fnIsHostConnectable ()
             fi
         done
         printf "\n" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
+        if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
         echo -e ${hostReachable}
     fi
 }
@@ -436,11 +453,13 @@ fnPingHost ()
     res=$?
 
     printf "Nmap returned %s\n" "${ret}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
     
     ret=$(nmap -sP -PE -PA23 time|grep "Host is up")
     res=$?
 
     printf "Nmap -PA23 returned %s\n" "${ret}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
     
     echo -e "${res}"
 }
@@ -465,6 +484,7 @@ fnSshHost ()
         local -r result="ssh ${host} is down"
     fi
     printf "%s\n%s\n" "${result}" "${ret}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
     echo -e "${hostup}"
 }
 
@@ -483,6 +503,7 @@ fnGetGlobalSettingFile ()
         GSETFILE="**NOTREADABLE**"
     fi
     printf "Using settings from %s\n" "${GSETFILE}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"     
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
     echo -e "${GSETFILE}"
 }
 
@@ -501,6 +522,7 @@ fnGetUserSettingFile ()
         USETFILE="**NOTREADABLE**"
     fi
     printf "Using settings from %s\n" "${USETFILE}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"         
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
     echo -e "${USETFILE}"
 }
 
@@ -548,6 +570,7 @@ fnsshupV2Help()
     ME="$(basename "$0")"
     usageFile="${BINDIR}/${ME}.usage"
     helpText=$(sed -e "s:\${ME}:${ME}:" -e "s:\${SETFILE}:${GSETFILE}:" "${usageFile}")
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
     printf "%s\n" "${helpText}"
     exit 0
 }
@@ -566,7 +589,7 @@ fnGetOpsSshupV2()
     
     while getopts_long "o:dhqvwcut:" opt \
         host required_argument \
-        debug no_argument \
+        debug required_argument \
         help no_argument \
         quiet no_argument \
         verbose no_argument \
@@ -579,7 +602,7 @@ fnGetOpsSshupV2()
         o|host) 
             optHost=$OPTLARG;;
         d|debug)
-            optDebug=true;;
+            optDebug=$OPTLARG;;
         h|help)
             optHelp=true;;
         q|quiet)
@@ -596,6 +619,7 @@ fnGetOpsSshupV2()
             optTimeout=$OPTLARG;;
         :)
             printf | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log" '%s: %s\n' "${0##*/}" "$OPTLERR"
+            if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
             optHelp=true
 #            exit 1;;
             ;;
@@ -612,18 +636,14 @@ fnGetOpsSshupV2()
 #===============================================================================
 fnDisplayDebugInfo()
 {
-    echo "fnDisplayDebugInfo 596" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log" 
+    if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
     values_now=( "$( compgen -v)" )                 # Get the currently defined variables
-    echo "fnDisplayDebugInfo 598" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
     #   
     # Remove all the variables that were allready defined when the script started  
     #
-    echo "fnDisplayDebugInfo 602" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
     for item in ${initial_variables[@]} ; do
-        echo "fnDisplayDebugInfo 604 item=${item}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
-        values_now=( "${values_now[@]/$item}" )
-        echo "fnDisplayDebugInfo 606 item=${item}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
-    done
+         values_now=( "${values_now[@]/$item}" )
+     done
 #-------------------------------------------------------------------------------   
 
 
@@ -645,10 +665,12 @@ fnDisplayDebugInfo()
 #-------------------------------------------------------------------------------   
 # Display the list of new variables and there values
 #
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug -  ${FUNCNAME} - lineno = $LINENO" >&2 ; fi
     for item in ${new_varables[@]} ; do
         printf "%s\n" "${item}" | fnOutput false true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"     
     done
     printf "\n\n" | fnOutput false true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
+    if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi
 #-------------------------------------------------------------------------------   
 
 }
@@ -661,9 +683,13 @@ fnDisplayDebugInfo()
 #===============================================================================
 fnErrHandler() 
 {
-  trap - ERR
-  let i=0 exit_status=$2
-  echo "Aborting on error $exit_status:"
+  #trap - ERR
+  local i=0
+  local script=$0
+  local lineNo=$1
+  local exit_status=$2
+  echo "Aborting on error in $script - exit_status $exit_status in lineno $lineNo :"
+  echo ""
   echo "${@}"
   echo "--------------------"
   while caller $i; do ((i++)); done
@@ -678,9 +704,12 @@ fnErrHandler()
 #===============================================================================
 fnSetShellOptions()
 {
-    set -uo pipefail
+    set -o nounset
+    set -o pipefail
+#    set -o errexit
     set -o errtrace
-#    trap 'fnErrHandler ${LINENO} ${$?}' ERR
+    set -o noclobber
+    trap 'fnErrHandler ${LINENO} ${$?}' ERR
     IFS=$'\n\t'
 }
 #
@@ -695,5 +724,6 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]] ; then
         shift
         echo "calling ${cmd}" | fnOutput true true "${optQuiet}" "${optVerbose}" "/home/carl/sshup.log"
         echo -- | ${cmd}
+        if [[ ${optDebug} -ge ${DBG_LVL_OUTPUT} ]] ; then echo "debug (aborting) -  ${FUNCNAME} - lineno = $LINENO" >&2 ; exit 77; fi        
     fi
 fi
