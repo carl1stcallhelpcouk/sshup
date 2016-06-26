@@ -142,16 +142,9 @@ fnGetOpsSshupV2 "$@"
 #----------------------------------------------------------------------------------
 
 if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
-#----------------------------------------------------------------------------------
-# Display debug information if option is set.
-#
-if [ ${optDebug} -ge ${DBG_LVL_ALL} ] ; then
-    if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
-    fnDisplayDebugInfo | fnOutput false true ${optQuiet} ${optVerbose} /home/carl/sshup.log
-fi
-#----------------------------------------------------------------------------------
+echo "DBG_LVL_ALL" | fnDebug ${DBG_LVL_ALL} ${LINENO} true
+exit ${E_DEBUG_BREAKPOINT}
 
-if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
 #----------------------------------------------------------------------------------
 # Display usage information if host is not set.
 #
@@ -162,7 +155,9 @@ if [[ ${optHelp} == false ]] ; then
     fi
 fi
 #----------------------------------------------------------------------------------
+
 if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+
 #----------------------------------------------------------------------------------
 # Display usage information if option is set.
 #
@@ -171,7 +166,9 @@ if [ $optHelp = true ] ; then
     exit 0
 fi
 #----------------------------------------------------------------------------------
+
 if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+
 #----------------------------------------------------------------------------------
 # And finally the main Code.
 #
@@ -190,3 +187,13 @@ if [[ ${isHostReachable} == true ]] ; then
 else
     printf "%s isHostReachable = %s\n" "${optHost}" "${isHostReachable}" | fnOutput false true ${optQuiet} ${optVerbose} "/home/carl/sshup.log"
 fi
+
+if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+#----------------------------------------------------------------------------------
+# Display debug information if option is set.
+#
+if [ ${optDebug} -ge ${DBG_LVL_LOW} ] ; then
+    if [[ ${optDebug} -ge ${DBG_LVL_LOW} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+    fnDisplayDebugInfo
+fi
+#----------------------------------------------------------------------------------
