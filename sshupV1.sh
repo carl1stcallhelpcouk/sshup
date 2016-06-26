@@ -104,7 +104,9 @@ if ! declare -F fnIsHostReachable ; then
     . "${BINDIR}/sshup.shinc"                      # Source sshup.shinc
 fi
 if ! declare -F read_ini ; then
+    set +u
     . "${BINDIR}/read_ini.sh"                      # Source read_ini.sh
+    set -u
 fi
 if ! declare -F getopts_long ; then
     set +u
@@ -141,9 +143,7 @@ fi
 fnGetOpsSshupV2 "$@"
 #----------------------------------------------------------------------------------
 
-if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
-echo "DBG_LVL_ALL" | fnDebug ${DBG_LVL_ALL} ${LINENO} true
-exit ${E_DEBUG_BREAKPOINT}
+echo "DBG_LVL_ALL " | fnDebug ${DBG_LVL_ALL} ${LINENO} false "**main()**"
 
 #----------------------------------------------------------------------------------
 # Display usage information if host is not set.
@@ -156,7 +156,8 @@ if [[ ${optHelp} == false ]] ; then
 fi
 #----------------------------------------------------------------------------------
 
-if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+#if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+echo "DBG_LVL_ALL " | fnDebug ${DBG_LVL_ALL} ${LINENO} false "**main()**"
 
 #----------------------------------------------------------------------------------
 # Display usage information if option is set.
@@ -167,14 +168,17 @@ if [ $optHelp = true ] ; then
 fi
 #----------------------------------------------------------------------------------
 
-if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+#if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+echo "DBG_LVL_ALL " | fnDebug ${DBG_LVL_ALL} ${LINENO} false "**main()**"
 
 #----------------------------------------------------------------------------------
 # And finally the main Code.
 #
-if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+#if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+echo "DBG_LVL_ALL " | fnDebug ${DBG_LVL_ALL} ${LINENO} false "**main()**"
 declare isHostReachable=$(fnIsHostReachable "${optHost}")
-if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+#if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+echo "DBG_LVL_ALL " | fnDebug ${DBG_LVL_ALL} ${LINENO} false "**main()**"
 
 if [[ ${isHostReachable} == true ]] ; then
     declare isHostConnectable=$(fnIsHostConnectable "${optHost}")
@@ -188,12 +192,14 @@ else
     printf "%s isHostReachable = %s\n" "${optHost}" "${isHostReachable}" | fnOutput false true ${optQuiet} ${optVerbose} "/home/carl/sshup.log"
 fi
 
-if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+#if [[ ${optDebug} -ge ${DBG_LVL_ALL} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+echo "DBG_LVL_ALL " | fnDebug ${DBG_LVL_ALL} ${LINENO} false "**main()**"
 #----------------------------------------------------------------------------------
 # Display debug information if option is set.
 #
 if [ ${optDebug} -ge ${DBG_LVL_LOW} ] ; then
-    if [[ ${optDebug} -ge ${DBG_LVL_LOW} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+#    if [[ ${optDebug} -ge ${DBG_LVL_LOW} ]] ; then echo "debug -  $(basename "$(test -L "$0" && readlink "$0" || echo "$0")") - lineno = $LINENO" >&2 ; fi
+    echo "DBG_LVL_ALL " | fnDebug ${DBG_LVL_ALL} ${LINENO} false "**main()**"
     fnDisplayDebugInfo
 fi
 #----------------------------------------------------------------------------------

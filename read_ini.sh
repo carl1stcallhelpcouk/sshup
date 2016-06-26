@@ -1,3 +1,4 @@
+#! /bin/bash
 #
 # Copyright (c) 2009    Kevin Porter / Advanced Web Construction Ltd
 #                       (http://coding.tinternet.info, http://webutils.co.uk)
@@ -13,11 +14,12 @@
 #
 
 declare SWITCH_SHOPT=""
-declare -fx check_prefix
-declare -fx read_ini
-declare -fx check_ini_file
-declare -fx pollute_bash
-declare -fx cleanup_bash
+
+#declare -fx check_prefix
+#declare -fx read_ini
+#declare -fx check_ini_file
+#declare -fx pollute_bash
+#declare -fx cleanup_bash
 
 # Be strict with the prefix, since it's going to be run through eval
 check_prefix()
